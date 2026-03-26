@@ -1,0 +1,15 @@
+file_format: "1"
+id: 5deg
+name: 5deg
+type: shield
+url: https://github.com/user/5deg
+requires:
+  - nice_nano_v2
+features:
+  - keys
+  - display
+  - underglow
+  - pointer
+siblings:
+  - 5deg_left
+  - 5deg_right

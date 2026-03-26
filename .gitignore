@@ -1,0 +1,13 @@
+build/
+output/
+.west/
+*.uf2
+*.hex
+*.bin
+*.elf
+*.map
+*.log
+__pycache__/
+*.pyc
+.vscode/
+.idea/

@@ -1,0 +1,181 @@
+/*
+ * 5deg Right Half — Peripheral (BLE link to left)
+ *
+ * 16 keys: 3x5 diode matrix + 1 thumb key
+ * GPIO bit-bang: PMW3610 trackball sensor (3-wire SPI via SDIO)
+ * SPI2: RGB LED chain (SK6812-MINI-E) — data on P0.02, power gate on P1.07
+ * SPI3: LCD display (nice!view clone, Sharp LS011B7DH03)
+ *
+ * Pin assignments (from plan-b + little-eye KiCad):
+ *   Matrix rows (bottom→up): ROW0=P0.12, ROW1=P0.11, ROW2=P1.08, ROW3=P0.07
+ *   Matrix cols (inside→out): COL0=P0.19, COL1=P0.21, COL2=P0.20, COL3=P0.22, COL4=P0.24
+ *   Trackball CLK:    P1.10 (GPIO bit-bang)
+ *   Trackball SDIO:   P1.13 (GPIO bit-bang, bidirectional)
+ *   Trackball CS:     P1.15 (GPIO, active low)
+ *   Trackball MOTION: P1.11 (GPIO interrupt, active low)
+ *   RGB DATA:         P0.02 (SPI2 MOSI)
+ *   RGB ON:           P1.07 (ext power gate)
+ *   LCD SCK:          P0.17 (SPI3)
+ *   LCD DATA:         P0.15 (SPI3 MOSI)
+ *   LCD CS:           P0.13 (SPI3)
+ */
+
+#include "5deg.dtsi"
+#include <dt-bindings/led/led.h>
+#include <dt-bindings/zmk/input_transform.h>
+
+/ {
+    kscan0: kscan_0 {
+        compatible = "zmk,kscan-gpio-matrix";
+        wakeup-source;
+
+        diode-direction = "col2row";
+
+        row-gpios
+            = <&gpio0 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW0 — thumbs  */
+            , <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW1 — lower   */
+            , <&gpio1 8  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW2 — middle  */
+            , <&gpio0 7  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW3 — top     */
+            ;
+
+        col-gpios
+            = <&gpio0 19 GPIO_ACTIVE_HIGH>  /* COL0 — inner  */
+            , <&gpio0 21 GPIO_ACTIVE_HIGH>  /* COL1          */
+            , <&gpio0 20 GPIO_ACTIVE_HIGH>  /* COL2          */
+            , <&gpio0 22 GPIO_ACTIVE_HIGH>  /* COL3          */
+            , <&gpio0 24 GPIO_ACTIVE_HIGH>  /* COL4 — outer  */
+            ;
+    };
+
+    /* RGB LED power gate */
+    ext-power {
+        compatible = "zmk,ext-power-generic";
+        control-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+/* --- Trackball (PMW3610) — GPIO bit-bang 3-wire SPI --- */
+
+/ {
+    trackball: pmw3610 {
+        compatible = "pixart,pmw3610";
+        cs-gpios     = <&gpio1 15 GPIO_ACTIVE_LOW>;
+        clk-gpios    = <&gpio1 10 0>;
+        sdio-gpios   = <&gpio1 13 0>;
+        motion-gpios = <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        cpi          = <800>;
+    };
+
+    /* Auto-activate MOUSE layer on trackball movement */
+    temp_layer: temp_layer {
+        compatible = "zmk,input-processor-temp-layer";
+        #input-processor-cells = <2>;
+        require-prior-idle-ms = <800>;
+        excluded-positions = <7 16 18>;  /* right-side home-row mod positions — avoid mod-tap conflicts */
+    };
+
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+
+        /* Normal mode: auto-activate MOUSE layer (8) for 1200 ms on movement */
+        input-processors = <&temp_layer 8 1200>;
+
+        /* When SCROLL layer (9) is active, convert XY to scroll events */
+        scroll {
+            layers = <9>;
+            input-processors = <&zip_xy_scaler 1 25>,
+                               <&zip_xy_to_scroll_mapper>,
+                               <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
+        };
+    };
+};
+
+/* --- RGB underglow (SK6812-MINI-E) on SPI2 --- */
+
+&pinctrl {
+    spi2_default: spi2_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 2)>,
+                    /* SCK required by SPIM but unused for WS2812 — park on spare PlanB pin */
+                    <NRF_PSEL(SPIM_SCK, 0, 26)>;
+        };
+    };
+
+    spi2_sleep: spi2_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 2)>,
+                    <NRF_PSEL(SPIM_SCK, 0, 26)>;
+            low-power-enable;
+        };
+    };
+
+    spi3_default: spi3_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  0, 17)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 15)>;
+        };
+    };
+
+    spi3_sleep: spi3_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  0, 17)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 15)>;
+            low-power-enable;
+        };
+    };
+};
+
+&spi2 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+
+    pinctrl-0 = <&spi2_default>;
+    pinctrl-1 = <&spi2_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    led_strip: ws2812@0 {
+        compatible = "worldsemi,ws2812-spi";
+        reg = <0>;
+
+        spi-max-frequency = <4000000>;
+        spi-one-frame = <0x70>;
+        spi-zero-frame = <0x40>;
+
+        chain-length = <16>;
+        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
+    };
+};
+
+/ {
+    chosen {
+        zmk,underglow = &led_strip;
+    };
+};
+
+/* --- LCD display (nice!view clone) on SPI3 --- */
+
+&spi3 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+
+    pinctrl-0 = <&spi3_default>;
+    pinctrl-1 = <&spi3_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    cs-gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+
+    nice_view: ls0xx@0 {
+        compatible = "sharp,ls0xx";
+        reg = <0>;
+        spi-max-frequency = <1000000>;
+        width = <160>;
+        height = <68>;
+    };
+};
+
+/ {
+    chosen {
+        zephyr,display = &nice_view;
+    };
+};
