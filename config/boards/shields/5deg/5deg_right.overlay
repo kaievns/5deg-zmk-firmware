@@ -54,6 +54,11 @@
     };
 };
 
+/* Shift right side columns by 5 so keys map to the right half of the transform */
+&default_transform {
+    col-offset = <5>;
+};
+
 /* --- Trackball (PMW3610) — GPIO bit-bang 3-wire SPI --- */
 
 / {
@@ -168,7 +173,7 @@
     nice_view: ls0xx@0 {
         compatible = "sharp,ls0xx";
         reg = <0>;
-        spi-max-frequency = <1000000>;
+        spi-max-frequency = <800000>;
         width = <160>;
         height = <68>;
     };
