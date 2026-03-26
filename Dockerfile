@@ -2,10 +2,8 @@ FROM docker.io/zmkfirmware/zmk-dev-arm:stable
 
 WORKDIR /workspace
 
-# Cache west init + ZMK/Zephyr fetch in a layer
+# Cache west init + ZMK/Zephyr fetch in image layer
 COPY config/west.yml config/west.yml
-RUN west init -l config && west update --narrow --fetch-opt=--depth=1
+RUN west init -l config && west update --narrow --fetch-opt=--depth=1 && west zephyr-export
 
-COPY . .
-
-ENTRYPOINT ["/bin/bash"]
+CMD ["/bin/bash"]
