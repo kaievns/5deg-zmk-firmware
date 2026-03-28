@@ -172,10 +172,10 @@ name: name##_mod_tap {                     \
 
         profile_default {
             layers = <HALMAK QWERTY NAVI EDIT NUMS SETTS ALTAB MOUSE>;
-            dpi = <800>;
+            dpi = <600>;
             acceleration-multiplier = <100>;
-            acceleration-threshold = <5>;
-            acceleration-exponent = <50>;
+            acceleration-threshold = <2>;
+            acceleration-exponent = <40>;
         };
 
         profile_scroll {
@@ -191,7 +191,7 @@ name: name##_mod_tap {                     \
             dpi = <1600>;
             acceleration-multiplier = <150>;
             acceleration-threshold = <3>;
-            acceleration-exponent = <80>;
+            acceleration-exponent = <60>;
         };
     };
 

@@ -31,6 +31,21 @@ right: docker
 	@cp build/right/zephyr/zmk.uf2 right.uf2
 	@echo "→ right.uf2"
 
+# ── Debug build (USB logging on left) ─────────────────────────────
+
+log-left: docker
+	rm -rf build/log-left
+	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/log-left -S zmk-usb-logging -- \
+		-DSHIELD="5deg_left nice_view" \
+		-DZMK_CONFIG=/src/config \
+		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)" \
+		-DCONFIG_LOG_BUFFER_SIZE=65536 \
+		-DCONFIG_DISPLAY_LOG_LEVEL_DBG=y \
+		-DCONFIG_SPI_LOG_LEVEL_DBG=y \
+		-DCONFIG_LOG_PROCESS_THREAD_STARTUP_DELAY_MS=3000
+	@cp build/log-left/zephyr/zmk.uf2 log-left.uf2
+	@echo "→ log-left.uf2"
+
 # ── Clean build ────────────────────────────────────────────────────
 
 clean:
