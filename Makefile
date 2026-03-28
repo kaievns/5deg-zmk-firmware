@@ -17,45 +17,19 @@ docker:
 
 left: docker
 	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/left -- \
-		-DSHIELD=5deg_left \
+		-DSHIELD="5deg_left nice_view" \
 		-DZMK_CONFIG=/src/config \
 		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)"
-	@cp build/left/zephyr/zmk.uf2 build/left.uf2
-	@echo "→ build/left.uf2"
+	@cp build/left/zephyr/zmk.uf2 left.uf2
+	@echo "→ left.uf2"
 
 right: docker
 	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/right -- \
-		-DSHIELD=5deg_right \
+		-DSHIELD="5deg_right nice_view" \
 		-DZMK_CONFIG=/src/config \
 		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)"
-	@cp build/right/zephyr/zmk.uf2 build/right.uf2
-	@echo "→ build/right.uf2"
-
-# ── Settings reset builds (clears BT bonds + saved state) ─────────
-
-RESET_FLAG := -DCONFIG_ZMK_SETTINGS_RESET_ON_START=y
-
-reset-left: docker
-	rm -rf build/reset-left
-	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/reset-left -- \
-		-DSHIELD=5deg_left \
-		-DZMK_CONFIG=/src/config \
-		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)" \
-		$(RESET_FLAG)
-	@cp build/reset-left/zephyr/zmk.uf2 build/reset-left.uf2
-	@echo "→ build/reset-left.uf2 (flash, then reflash with normal build!)"
-
-reset-right: docker
-	rm -rf build/reset-right
-	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/reset-right -- \
-		-DSHIELD=5deg_right \
-		-DZMK_CONFIG=/src/config \
-		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)" \
-		$(RESET_FLAG)
-	@cp build/reset-right/zephyr/zmk.uf2 build/reset-right.uf2
-	@echo "→ build/reset-right.uf2 (flash, then reflash with normal build!)"
-
-reset: reset-left reset-right
+	@cp build/right/zephyr/zmk.uf2 right.uf2
+	@echo "→ right.uf2"
 
 # ── Clean build ────────────────────────────────────────────────────
 

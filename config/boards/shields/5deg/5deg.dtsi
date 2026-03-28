@@ -1,5 +1,5 @@
 /*
- * 5deg split keyboard - shared devicetree include
+ * 5deg split keyboard — shared devicetree
  *
  * Left:  17 keys (3x5 matrix + 2 thumbs)
  * Right: 16 keys (3x5 matrix + 1 thumb)
@@ -7,9 +7,17 @@
  * Matrix wiring (from plan-b KiCad):
  *   Columns inside→out: COL0=P0.19, COL1=P0.21, COL2=P0.20, COL3=P0.22, COL4=P0.24
  *   Rows bottom→up:     ROW0=P0.12 (thumbs), ROW1=P0.11 (lower), ROW2=P1.08 (middle), ROW3=P0.07 (top)
+ *
+ * Peripherals (same wiring both halves):
+ *   SPI0: LCD display (SCK=P0.17, MOSI=P0.15, CS=P0.13) — shared instance with I2C0, so I2C0 is disabled
+ *   SPI2: RGB LEDs    (MOSI=P0.02, SCK=P0.26 dummy)
+ *   EXT_POWER:        P1.07 (RGB power gate)
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
+#include <dt-bindings/led/led.h>
+#include <dt-bindings/zmk/input_transform.h>
+#include <input/processors.dtsi>
 
 / {
     chosen {
@@ -17,22 +25,48 @@
         zmk,matrix-transform = &default_transform;
     };
 
+    /* --- Split input bridge for trackball on peripheral --- */
+
+    splits {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        split_input: split_input@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+        };
+    };
+
+    temp_layer: temp_layer {
+        compatible = "zmk,input-processor-temp-layer";
+        #input-processor-cells = <2>;
+        require-prior-idle-ms = <800>;
+        excluded-positions = <7 16 18>;
+    };
+
+    trackball_listener {
+        compatible = "zmk,input-listener";
+        device = <&split_input>;
+        input-processors = <&temp_layer 8 1200>;
+
+        scroll {
+            layers = <9>;
+            input-processors = <&zip_xy_scaler 1 25>,
+                               <&zip_xy_to_scroll_mapper>,
+                               <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
+        };
+    };
+
     /*
-     * Physical key positions:
-     *
      * LEFT (pinky → inner)         RIGHT (inner → pinky)
      * ┌────┬────┬────┬────┬────┐   ┌────┬────┬────┬────┬────┐
-     * │ 0  │ 1  │ 2  │ 3  │ 4  │   │ 5  │ 6  │ 7  │ 8  │ 9  │  ← ROW3 (top)
+     * │ 0  │ 1  │ 2  │ 3  │ 4  │   │ 5  │ 6  │ 7  │ 8  │ 9  │  ← ROW3
      * ├────┼────┼────┼────┼────┤   ├────┼────┼────┼────┼────┤
-     * │ 10 │ 11 │ 12 │ 13 │ 14 │   │ 15 │ 16 │ 17 │ 18 │ 19 │  ← ROW2 (middle)
+     * │ 10 │ 11 │ 12 │ 13 │ 14 │   │ 15 │ 16 │ 17 │ 18 │ 19 │  ← ROW2
      * ├────┼────┼────┼────┼────┤   ├────┼────┼────┼────┼────┤
-     * │ 20 │ 21 │ 22 │ 23 │ 24 │   │ 25 │ 26 │ 27 │ 28 │ 29 │  ← ROW1 (lower)
+     * │ 20 │ 21 │ 22 │ 23 │ 24 │   │ 25 │ 26 │ 27 │ 28 │ 29 │  ← ROW1
      * └────┴────┴──┬─┴──┬─┴────┘   └────┴─┬──┴────┴────┴────┘
-     *              │ 30 │ 31 │        │ 32 │                      ← ROW0 (thumbs)
-     *              └────┴────┘        └────┘
-     *
-     * Left cols:  pos 0=COL4(outer/pinky) … pos 4=COL0(inner)
-     * Right cols: pos 5=COL0(inner) … pos 9=COL4(outer/pinky)
+     *              │ 30 │ 31 │       │ 32 │                      ← ROW0
+     *              └────┴────┘       └────┘
      */
     default_transform: keymap_transform_0 {
         compatible = "zmk,matrix-transform";
@@ -45,4 +79,92 @@
                                     RC(0,1) RC(0,0)    RC(0,5)
         >;
     };
+
+    kscan0: kscan_0 {
+        compatible = "zmk,kscan-gpio-matrix";
+        wakeup-source;
+        diode-direction = "col2row";
+
+        row-gpios
+            = <&gpio0 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW0 — thumbs  */
+            , <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW1 — lower   */
+            , <&gpio1 8  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW2 — middle  */
+            , <&gpio0 7  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>  /* ROW3 — top     */
+            ;
+
+        col-gpios
+            = <&gpio0 19 GPIO_ACTIVE_HIGH>  /* COL0 — inner  */
+            , <&gpio0 21 GPIO_ACTIVE_HIGH>  /* COL1          */
+            , <&gpio0 20 GPIO_ACTIVE_HIGH>  /* COL2          */
+            , <&gpio0 22 GPIO_ACTIVE_HIGH>  /* COL3          */
+            , <&gpio0 24 GPIO_ACTIVE_HIGH>  /* COL4 — outer  */
+            ;
+    };
+
+    /* Override nice_nano's EXT_POWER with our RGB power gate pin */
+    EXT_POWER {
+        control-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+/* --- Pinctrl: SPI2 = LCD (proven working), SPI0 = RGB --- */
+
+&pinctrl {
+    /* LCD on SPI2 (SCK=P0.17, MOSI=P0.15) */
+    spi2_default: spi2_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  0, 17)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 15)>;
+        };
+    };
+
+    spi2_sleep: spi2_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  0, 17)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 15)>;
+            low-power-enable;
+        };
+    };
+
+    /* RGB on SPI0 (MOSI=P0.02, SCK=P0.26 dummy) */
+    spi0_default: spi0_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 2)>,
+                    <NRF_PSEL(SPIM_SCK,  0, 26)>;
+        };
+    };
+
+    spi0_sleep: spi0_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 2)>,
+                    <NRF_PSEL(SPIM_SCK,  0, 26)>;
+            low-power-enable;
+        };
+    };
+};
+
+/* Disable I2C0 — shares peripheral with SPI0 */
+&pro_micro_i2c {
+    status = "disabled";
+};
+
+/* --- LCD display on SPI2 (nice_view shield adds the ls0xx device) --- */
+
+nice_view_spi: &spi2 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi2_default>;
+    pinctrl-1 = <&spi2_sleep>;
+    pinctrl-names = "default", "sleep";
+    cs-gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+};
+
+/* --- RGB underglow on SPI0 (chain-length set per-side in overlays) --- */
+
+&spi0 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi0_default>;
+    pinctrl-1 = <&spi0_sleep>;
+    pinctrl-names = "default", "sleep";
 };
