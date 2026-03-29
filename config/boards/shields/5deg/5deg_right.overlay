@@ -1,5 +1,7 @@
 #include "5deg.dtsi"
 #include <dt-bindings/led/led.h>
+#include <dt-bindings/zmk/input_transform.h>
+#include <input/processors.dtsi>
 
 &default_transform {
     col-offset = <5>;
@@ -66,4 +68,5 @@
 /* Connect trackball to split input bridge */
 &split_input {
     device = <&trackball>;
+    input-processors = <&zip_xy_transform (INPUT_TRANSFORM_XY_SWAP)>;
 };

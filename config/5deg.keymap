@@ -167,27 +167,35 @@ name: name##_mod_tap {                     \
 #define HRMR(k1,k2,k3,k4) &ht_ctl 0 k1  &sht RSHFT k2  &ht_alt 0 k3  &ht_gui 0 k4
 
 / {
-    trackball_profiles {
-        compatible = "zmk,trackball-profiles";
+    /* Trackball DPI — default + layer overrides */
+    trackball_dpi: trackball_dpi {
+        compatible = "zmk,trackball-dpi-profiles";
+        dpi = <600>;
 
-        profile_default {
-            layers = <HALMAK QWERTY NAVI EDIT NUMS SETTS ALTAB MOUSE>;
-            dpi = <600>;
-            acceleration-exponent = <120>;  /* d^1.2 — smooth MX Ergo-like */
-        };
+        scroll { layers = <SCROLL>; dpi = <400>; };
+        gaming { layers = <GAMPAD>; dpi = <800>; };
+    };
 
-        profile_scroll {
+    /* Trackball input processor pipeline — default + layer overrides */
+    trackball_listener {
+        input-processors =
+            <&zip_accel 120>,
+            <&temp_layer 8 1200>;
+
+        scroll {
             layers = <SCROLL>;
-            dpi = <400>;
-            acceleration-exponent = <100>;  /* d^1.0 — linear, no accel */
+            input-processors =
+                <&zip_xy_scaler 1 25>,
+                <&zip_xy_to_scroll_mapper>,
+                <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
         };
 
-        profile_gaming {
+        gaming {
             layers = <GAMPAD>;
-            dpi = <1600>;
-            acceleration-exponent = <140>;  /* d^1.4 — snappy */
+            input-processors = <&zip_accel 140>;
         };
     };
+
 
     keymap {
         compatible = "zmk,keymap";
@@ -293,3 +301,4 @@ name: name##_mod_tap {                     \
         };
     };
 };
+
