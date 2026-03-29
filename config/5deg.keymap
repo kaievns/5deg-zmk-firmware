@@ -167,6 +167,14 @@ name: name##_mod_tap {                     \
 #define HRMR(k1,k2,k3,k4) &ht_ctl 0 k1  &sht RSHFT k2  &ht_alt 0 k3  &ht_gui 0 k4
 
 / {
+    /* Mouse layer processor — properties */
+    zip_mouse_layer {
+        require-prior-idle-ms = <800>;
+        double-click-window-ms = <300>;
+        active-layers = <HALMAK QWERTY>;
+        button-positions = <7 16 18>;   /* MCLK, LCLK, RCLK on MOUSE layer */
+    };
+
     /* Trackball DPI — default + layer overrides */
     trackball_dpi: trackball_dpi {
         compatible = "zmk,trackball-dpi-profiles";
@@ -181,7 +189,7 @@ name: name##_mod_tap {                     \
         input-processors =
             <&zip_smooth 6>,
             <&zip_accel 120>,
-            <&temp_layer 8 1200>;       
+            <&zip_mouse_layer MOUSE 500>;
 
         scroll {
             layers = <SCROLL>;
