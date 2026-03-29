@@ -1,25 +1,12 @@
 description: |
   PixArt PMW3610 ultra-low-power optical motion sensor (trackball).
-  Uses 3-wire SPI (bidirectional SDIO) via GPIO bit-banging.
+  SPI device with 3-wire SDIO (connect MOSI and MISO to the same SDIO line).
 
 compatible: "pixart,pmw3610"
 
+include: spi-device.yaml
+
 properties:
-  cs-gpios:
-    type: phandle-array
-    required: true
-    description: Chip select (NCS) GPIO, active low.
-
-  clk-gpios:
-    type: phandle-array
-    required: true
-    description: SPI clock GPIO.
-
-  sdio-gpios:
-    type: phandle-array
-    required: true
-    description: Bidirectional SPI data GPIO (SDIO).
-
   motion-gpios:
     type: phandle-array
     required: true

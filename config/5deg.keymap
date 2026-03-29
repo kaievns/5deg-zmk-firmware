@@ -173,25 +173,19 @@ name: name##_mod_tap {                     \
         profile_default {
             layers = <HALMAK QWERTY NAVI EDIT NUMS SETTS ALTAB MOUSE>;
             dpi = <600>;
-            acceleration-multiplier = <100>;
-            acceleration-threshold = <2>;
-            acceleration-exponent = <40>;
+            acceleration-exponent = <120>;  /* d^1.2 — smooth MX Ergo-like */
         };
 
         profile_scroll {
             layers = <SCROLL>;
             dpi = <400>;
-            acceleration-multiplier = <60>;
-            acceleration-threshold = <8>;
-            acceleration-exponent = <0>;
+            acceleration-exponent = <100>;  /* d^1.0 — linear, no accel */
         };
 
         profile_gaming {
             layers = <GAMPAD>;
             dpi = <1600>;
-            acceleration-multiplier = <150>;
-            acceleration-threshold = <3>;
-            acceleration-exponent = <60>;
+            acceleration-exponent = <140>;  /* d^1.4 — snappy */
         };
     };
 

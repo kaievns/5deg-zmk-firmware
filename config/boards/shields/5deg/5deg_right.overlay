@@ -25,16 +25,41 @@
     };
 };
 
-/* --- Trackball (PMW3610) — GPIO bit-bang 3-wire SPI --- */
+/* --- Trackball (PMW3610) on SPI1 — 3-wire SDIO (MOSI=MISO=P1.13) --- */
 
-/ {
-    trackball: pmw3610 {
+&pinctrl {
+    spi1_default: spi1_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  1, 10)>,
+                    <NRF_PSEL(SPIM_MOSI, 1, 13)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 13)>;
+        };
+    };
+
+    spi1_sleep: spi1_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  1, 10)>,
+                    <NRF_PSEL(SPIM_MOSI, 1, 13)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 13)>;
+            low-power-enable;
+        };
+    };
+};
+
+&spi1 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi1_default>;
+    pinctrl-1 = <&spi1_sleep>;
+    pinctrl-names = "default", "sleep";
+    cs-gpios = <&gpio1 15 GPIO_ACTIVE_LOW>;
+
+    trackball: trackball@0 {
         compatible = "pixart,pmw3610";
-        cs-gpios     = <&gpio1 15 GPIO_ACTIVE_LOW>;
-        clk-gpios    = <&gpio1 10 0>;
-        sdio-gpios   = <&gpio1 13 0>;
+        reg = <0>;
+        spi-max-frequency = <1200000>;
         motion-gpios = <&gpio1 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-        cpi          = <800>;
+        cpi = <600>;
     };
 };
 
