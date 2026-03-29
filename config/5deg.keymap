@@ -179,8 +179,9 @@ name: name##_mod_tap {                     \
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
+            <&zip_smooth 6>,
             <&zip_accel 120>,
-            <&temp_layer 8 1200>;
+            <&temp_layer 8 1200>;       
 
         scroll {
             layers = <SCROLL>;
@@ -192,7 +193,9 @@ name: name##_mod_tap {                     \
 
         gaming {
             layers = <GAMPAD>;
-            input-processors = <&zip_accel 140>;
+            input-processors =
+                <&zip_smooth 1>,
+                <&zip_accel 140>;
         };
     };
 
