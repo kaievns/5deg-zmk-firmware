@@ -46,6 +46,15 @@ log-left: docker
 	@cp build/log-left/zephyr/zmk.uf2 log-left.uf2
 	@echo "→ log-left.uf2"
 
+# ── Reset firmware ────────────────────────────────────────────────
+
+reset: docker
+	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/reset -- \
+		-DSHIELD=settings_reset \
+		-DZMK_CONFIG=/src/config
+	@cp build/reset/zephyr/zmk.uf2 reset.uf2
+	@echo "→ reset.uf2"
+
 # ── Clean build ────────────────────────────────────────────────────
 
 clean:

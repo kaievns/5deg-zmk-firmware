@@ -187,9 +187,9 @@ name: name##_mod_tap {                     \
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
-            <&zip_smooth 6>,
+            <&zip_smooth 4>,
             <&zip_accel 120>,
-            <&zip_mouse_layer MOUSE 500>;
+            <&zip_mouse_layer MOUSE 1200>;
 
         scroll {
             layers = <SCROLL>;
@@ -277,7 +277,7 @@ name: name##_mod_tap {                     \
                 &to QWERTY &none      &none    &out OUT_TOG &bt BT_SEL 0   &sys_reset        &kp F4          &kp F5          &kp F9     &kp F10
                 &to HALMAK &none      &kp LSHFT  &none      &bt BT_SEL 1   &bootloader       &kp F1          &kp F2          &kp F3     &kp F11
                 &to GAMPAD &none      &none      &none      &bt BT_SEL 2   &ext_power EP_TOG &kp F8          &kp F6          &kp F7     &kp F12
-                                                 &none      &bt BT_CLR     &none
+                                                 &none      &bt BT_CLR     &rgb_ug RGB_EFF
             >;
         };
 
