@@ -58,7 +58,7 @@ reset: docker
 # ── Clean build ────────────────────────────────────────────────────
 
 clean:
-	rm -rf build
+	rm -rf build && rm -rf *.uf2
 
 # ── Interactive shell ──────────────────────────────────────────────
 
