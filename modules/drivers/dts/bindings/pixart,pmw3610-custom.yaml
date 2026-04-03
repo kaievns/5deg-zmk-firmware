@@ -2,7 +2,7 @@ description: |
   PixArt PMW3610 ultra-low-power optical motion sensor (trackball).
   SPI device with 3-wire SDIO (connect MOSI and MISO to the same SDIO line).
 
-compatible: "pixart,pmw3610"
+compatible: "pixart,pmw3610-custom"
 
 include: spi-device.yaml
 

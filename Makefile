@@ -1,6 +1,6 @@
 DOCKER_IMAGE := 5deg-zmk
 DOCKER_RUN   := docker run --rm -t -v $(CURDIR):/src $(DOCKER_IMAGE)
-BOARD        ?= nice_nano_v2
+BOARD        ?= nice_nano@2.0.0/nrf52840/zmk
 EXTRA_MODULES := /src/modules/drivers;/src/modules/behaviors
 WEST_BUILD    = west build -s zmk/app -b $(BOARD)
 

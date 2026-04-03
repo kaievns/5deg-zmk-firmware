@@ -186,7 +186,7 @@ name: name##_mod_tap {                     \
         scroll {
             layers = <SCROLL>;
             input-processors =
-                <&zip_spike_filter 10>,
+                <&zip_spike_filter 6>,
                 <&zip_xy_scaler 1 80>,
                 <&zip_xy_to_scroll_mapper>,
                 <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
