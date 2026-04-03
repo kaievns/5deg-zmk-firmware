@@ -178,9 +178,8 @@ name: name##_mod_tap {                     \
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
-            <&zip_deflicker 3>,
             <&zip_smooth 4>,
-            <&zip_accel 120>,
+            // <&zip_accel 120>,
             <&zip_xy_scaler 1 2>,
             <&zip_mouse_layer MOUSE 1200>;
 

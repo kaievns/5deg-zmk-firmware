@@ -19,7 +19,6 @@
 #include <dt-bindings/zmk/input_transform.h>
 #include <input/processors.dtsi>
 #include <input/processors/accel.dtsi>
-#include <input/processors/deflicker.dtsi>
 #include <input/processors/smooth.dtsi>
 #include <input/processors/mouse_layer.dtsi>
 

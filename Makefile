@@ -46,6 +46,20 @@ log-left: docker
 	@cp build/log-left/zephyr/zmk.uf2 log-left.uf2
 	@echo "→ log-left.uf2"
 
+# ── Debug build (USB logging on right) ────────────────────────────
+
+log-right: docker
+	rm -rf build/log-right
+	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/log-right -S zmk-usb-logging -- \
+		-DSHIELD="5deg_right nice_view" \
+		-DZMK_CONFIG=/src/config \
+		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)" \
+		-DCONFIG_LOG_BUFFER_SIZE=65536 \
+		-DCONFIG_PMW3610_LOG_LEVEL_DBG=y \
+		-DCONFIG_LOG_PROCESS_THREAD_STARTUP_DELAY_MS=3000
+	@cp build/log-right/zephyr/zmk.uf2 log-right.uf2
+	@echo "→ log-right.uf2"
+
 # ── Reset firmware ────────────────────────────────────────────────
 
 reset: docker
