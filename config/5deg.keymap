@@ -175,28 +175,19 @@ name: name##_mod_tap {                     \
         button-positions = <7 16 18>;   /* MCLK, LCLK, RCLK on MOUSE layer */
     };
 
-    /* Trackball DPI — default + layer overrides */
-    trackball_dpi: trackball_dpi {
-        compatible = "zmk,trackball-dpi-profiles";
-        dpi = <600>;
-
-        scroll { layers = <SCROLL>; dpi = <400>; };
-        gaming { layers = <GAMPAD>; dpi = <800>; };
-    };
-
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
             <&zip_deflicker 3>,
             <&zip_smooth 4>,
             <&zip_accel 120>,
+            <&zip_xy_scaler 1 2>,
             <&zip_mouse_layer MOUSE 1200>;
 
         scroll {
             layers = <SCROLL>;
             input-processors =
-                <&zip_deflicker 3>,
-                <&zip_xy_scaler 1 25>,
+                <&zip_xy_scaler 1 50>,
                 <&zip_xy_to_scroll_mapper>,
                 <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
         };
@@ -204,7 +195,6 @@ name: name##_mod_tap {                     \
         gaming {
             layers = <GAMPAD>;
             input-processors =
-                <&zip_deflicker 3>,
                 <&zip_smooth 1>,
                 <&zip_accel 140>;
         };
