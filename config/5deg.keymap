@@ -178,16 +178,16 @@ name: name##_mod_tap {                     \
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
+            <&zip_spike_filter 9>,
             <&zip_response_curve 4>,
-            // <&zip_smooth 4>,
-            // <&zip_accel 120>,
             <&zip_xy_scaler 1 2>,
             <&zip_mouse_layer MOUSE 1200>;
 
         scroll {
             layers = <SCROLL>;
             input-processors =
-                <&zip_xy_scaler 1 50>,
+                <&zip_spike_filter 10>,
+                <&zip_xy_scaler 1 100>,
                 <&zip_xy_to_scroll_mapper>,
                 <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>;
         };
@@ -195,8 +195,9 @@ name: name##_mod_tap {                     \
         gaming {
             layers = <GAMPAD>;
             input-processors =
-                <&zip_smooth 1>,
-                <&zip_accel 140>;
+                <&zip_spike_filter 6>,
+                <&zip_response_curve 4>,
+                <&zip_xy_scaler 2 3>;
         };
     };
 

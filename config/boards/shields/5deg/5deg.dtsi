@@ -21,6 +21,7 @@
 #include <input/processors/accel.dtsi>
 #include <input/processors/smooth.dtsi>
 #include <input/processors/response_curve.dtsi>
+#include <input/processors/spike_filter.dtsi>
 #include <input/processors/mouse_layer.dtsi>
 
 / {
