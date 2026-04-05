@@ -139,7 +139,7 @@
 /* --- LCD display on SPI2 (nice_view shield adds the ls0xx device) --- */
 
 nice_view_spi: &spi2 {
-    status = "okay";
+    status = "disabled"; // disabling util i fix the PCB
     compatible = "nordic,nrf-spim";
     pinctrl-0 = <&spi2_default>;
     pinctrl-1 = <&spi2_sleep>;
