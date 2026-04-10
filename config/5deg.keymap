@@ -169,7 +169,9 @@ name: name##_mod_tap {                     \
 / {
     /* Mouse layer processor — properties */
     zip_mouse_layer {
-        require-prior-idle-ms = <800>;
+        require-prior-idle-ms = <1200>;
+        activation-threshold = <10>;
+        activation-window-ms = <200>;
         double-click-window-ms = <300>;
         active-layers = <HALMAK QWERTY>;
         button-positions = <7 16 18>;   /* MCLK, LCLK, RCLK on MOUSE layer */
