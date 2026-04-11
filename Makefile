@@ -17,7 +17,7 @@ docker:
 
 left: docker
 	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/left -- \
-		-DSHIELD="5deg_left nice_view" \
+		-DSHIELD="5deg_left" \
 		-DZMK_CONFIG=/src/config \
 		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)"
 	@cp build/left/zephyr/zmk.uf2 left.uf2
@@ -25,7 +25,7 @@ left: docker
 
 right: docker
 	$(DOCKER_RUN) $(WEST_BUILD) -d /src/build/right -- \
-		-DSHIELD="5deg_right nice_view" \
+		-DSHIELD="5deg_right" \
 		-DZMK_CONFIG=/src/config \
 		-DZMK_EXTRA_MODULES="$(EXTRA_MODULES)"
 	@cp build/right/zephyr/zmk.uf2 right.uf2
