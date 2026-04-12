@@ -273,8 +273,8 @@ name: name##_mod_tap {                     \
             bindings = <
                 &to QWERTY &none      &none    &out OUT_TOG &bt BT_SEL 0   &sys_reset        &kp F4          &kp F5          &kp F9     &kp F10
                 &to HALMAK &none      &kp LSHFT  &none      &bt BT_SEL 1   &bootloader       &kp F1          &kp F2          &kp F3     &kp F11
-                &to GAMPAD &none      &none      &none      &bt BT_SEL 2   &ext_power EP_TOG &kp F8          &kp F6          &kp F7     &kp F12
-                                                 &none      &bt BT_CLR     &rgb_ug RGB_EFF
+                &to GAMPAD &none      &none      &none      &bt BT_SEL 2   &rgb_ug RGB_EFF   &kp F8          &kp F6          &kp F7     &kp F12
+                                                 &none      &bt BT_CLR     &rgb_ug RGB_TOG
             >;
         };
 
