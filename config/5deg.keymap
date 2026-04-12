@@ -172,6 +172,7 @@ name: name##_mod_tap {                     \
         require-prior-idle-ms = <1200>;
         activation-threshold = <10>;
         activation-window-ms = <200>;
+        activation-event-min = <3>;
         double-click-window-ms = <300>;
         active-layers = <HALMAK QWERTY>;
         button-positions = <7 16 18>;   /* MCLK, LCLK, RCLK on MOUSE layer */
