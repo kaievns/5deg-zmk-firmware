@@ -4,3 +4,6 @@
 [submodule "modules/trackball-processors"]
 	path = modules/trackball-processors
 	url = https://github.com/kaievns/zmk-trackball-processors.git
+[submodule "modules/mouse-layer"]
+	path = modules/mouse-layer
+	url = https://github.com/kaievns/zmk-mouse-layer.git

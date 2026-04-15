@@ -1,7 +1,7 @@
 DOCKER_IMAGE := 5deg-zmk
 DOCKER_RUN   := docker run --rm -t -v $(CURDIR):/src $(DOCKER_IMAGE)
 BOARD        ?= nice_nano@2.0.0/nrf52840/zmk
-EXTRA_MODULES := /src/modules/pmw3610;/src/modules/trackball-processors
+EXTRA_MODULES := /src/modules/pmw3610;/src/modules/trackball-processors;/src/modules/mouse-layer
 WEST_BUILD    = west build -s zmk/app -b $(BOARD)
 
 .PHONY: all left right clean shell docker reset-left reset-right reset
