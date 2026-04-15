@@ -7,3 +7,6 @@
 [submodule "modules/mouse-layer"]
 	path = modules/mouse-layer
 	url = https://github.com/kaievns/zmk-mouse-layer.git
+[submodule "modules/alt-tab"]
+	path = modules/alt-tab
+	url = https://github.com/kaievns/zmk-alt-tab.git
