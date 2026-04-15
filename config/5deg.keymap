@@ -282,7 +282,7 @@ name: name##_mod_tap {                     \
             display-name = "ALTAB";
             bindings = <
                 &altab_x   &kp TAB    &altab_x   &altab_x   &altab_x       &altab_x   &altab_x   &altab_x   &altab_x   &altab_x
-                &altab_x   &altab_x   &altab_x   &altab_x   &altab_x       &altab_x   &altab_x   &altab_x   &altab_x   &altab_x
+                &altab_x   &altab_x   &altab_x   &altab_x   &altab_x       &altab_x   &mkp LCLK  &altab_x   &altab_x   &altab_x
                 &altab_x   &altab_x   &altab_x   &altab_x   &altab_x       &altab_x   &altab_x   &altab_x   &altab_x   &altab_x
                                                  &altab_x   &altab_x       &altab_x
             >;
