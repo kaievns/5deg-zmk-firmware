@@ -1,3 +1,6 @@
 [submodule "modules/pmw3610"]
 	path = modules/pmw3610
 	url = https://github.com/kaievns/pmw3610-zmk-driver.git
+[submodule "modules/trackball-processors"]
+	path = modules/trackball-processors
+	url = https://github.com/kaievns/zmk-trackball-processors.git
