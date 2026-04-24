@@ -40,7 +40,8 @@
 #include <dt-bindings/zmk/ext_power.h>
 
 &lt {
-	flavor = "hold-preferred";
+	flavor = "balanced";
+    tapping-term-ms = <300>;
 };
 
 &caps_word {
@@ -107,6 +108,14 @@ name: name##_mod_tap {                     \
             compatible = "zmk,behavior-alt-tab";
             #binding-cells = <2>;
             hold-ms = <10>;
+        };
+        mkh: mkh {
+            compatible = "zmk,behavior-mkh";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <250>;
+            prior-motion-ms = <400>;
+            bindings = <&kp>, <&mkp>;
         };
     };
 };
@@ -229,9 +238,9 @@ name: name##_mod_tap {                     \
         mouse_layer {
             display-name = "MOUSE";
             bindings = <
-                &trans     &trans     &trans     &trans     &trans         &trans     &trans     &mkp MCLK  &trans     &trans
-                &trans     &trans     &trans     &trans     &trans         &trans     &mkp LCLK  &trans     &mkp RCLK  &tog MOUSE
-                &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans     &trans     &trans
+                &trans     &trans     &trans     &trans     &trans         &trans     &trans    &mkp MCLK     &trans     &trans
+                &trans     &trans     &trans     &trans     &trans         &trans  &mkh LCTRL LCLK  &trans  &mkh LALT RCLK &trans
+                &trans     &trans     &trans     &trans     &trans         &trans     &trans     &trans       &trans     &trans
                                                  &trans     &trans         &trans
             >;
         };
