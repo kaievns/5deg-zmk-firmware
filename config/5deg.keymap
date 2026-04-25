@@ -40,9 +40,17 @@
 #include <dt-bindings/zmk/ext_power.h>
 
 &lt {
-	flavor = "balanced";
-    tapping-term-ms = <300>;
+	flavor = "hold-preferred";
+    tapping-term-ms = <250>;
+    quick-tap-ms = <150>;
 };
+
+/* Per-hand position lists for hold-trigger-key-positions on home-row mods.
+ * A home-row mod only resolves to HOLD when an OPPOSITE-hand key triggers it,
+ * which eliminates same-hand rolling misfires (e.g. typing "th" briefly
+ * sharing two HRM keys on the left should never fire a modifier). */
+#define LEFT_HAND  0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 30 31
+#define RIGHT_HAND 5 6 7 8 9 15 16 17 18 19 25 26 27 28 29 32
 
 &caps_word {
 	continue-list = <UNDER MINUS BSPC RSHFT LSHFT>;
@@ -81,29 +89,38 @@ name: name##_macro {                           \
     };
 };
 
-#define HOME_ROW_MOD_TAP(name, macro)      \
-name: name##_mod_tap {                     \
-    compatible = "zmk,behavior-hold-tap";  \
-    #binding-cells = <2>;                  \
-    flavor = "balanced";                   \
-    tapping-term-ms = <200>;               \
-    quick-tap-ms = <150>;                  \
-    bindings = <macro>, <&kp>;             \
+#define HOME_ROW_MOD_TAP(name, macro, OPP_HAND) \
+name: name##_mod_tap {                          \
+    compatible = "zmk,behavior-hold-tap";       \
+    #binding-cells = <2>;                       \
+    flavor = "balanced";                        \
+    tapping-term-ms = <200>;                    \
+    quick-tap-ms = <150>;                       \
+    hold-trigger-key-positions = <OPP_HAND>;    \
+    bindings = <macro>, <&kp>;                  \
+};
+
+#define SHT_HT(name, OPP_HAND)                  \
+name: name##_quick_hold_tap {                   \
+    compatible = "zmk,behavior-hold-tap";       \
+    #binding-cells = <2>;                       \
+    flavor = "balanced";                        \
+    tapping-term-ms = <170>;                    \
+    quick-tap-ms = <130>;                       \
+    hold-trigger-key-positions = <OPP_HAND>;    \
+    bindings = <&kp>, <&kp>;                    \
 };
 
 / {
     behaviors {
-        HOME_ROW_MOD_TAP(ht_alt, &qalt)
-        HOME_ROW_MOD_TAP(ht_gui, &qgui)
-        HOME_ROW_MOD_TAP(ht_ctl, &qctl)
-        sht: quick_hold_tap {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <170>;
-            quick-tap-ms = <130>;
-            bindings = <&kp>, <&kp>;
-        };
+        HOME_ROW_MOD_TAP(ht_alt_l, &qalt, RIGHT_HAND)
+        HOME_ROW_MOD_TAP(ht_gui_l, &qgui, RIGHT_HAND)
+        HOME_ROW_MOD_TAP(ht_ctl_l, &qctl, RIGHT_HAND)
+        HOME_ROW_MOD_TAP(ht_alt_r, &qalt, LEFT_HAND)
+        HOME_ROW_MOD_TAP(ht_gui_r, &qgui, LEFT_HAND)
+        HOME_ROW_MOD_TAP(ht_ctl_r, &qctl, LEFT_HAND)
+        SHT_HT(sht_l, RIGHT_HAND)
+        SHT_HT(sht_r, LEFT_HAND)
         alt_tab: alt_tab {
             compatible = "zmk,behavior-alt-tab";
             #binding-cells = <2>;
@@ -120,8 +137,8 @@ name: name##_mod_tap {                     \
     };
 };
 
-#define HRML(k1,k2,k3,k4) &ht_gui 0 k1  &ht_alt 0 k2  &sht LSHFT k3  &ht_ctl 0 k4
-#define HRMR(k1,k2,k3,k4) &ht_ctl 0 k1  &sht RSHFT k2  &ht_alt 0 k3  &ht_gui 0 k4
+#define HRML(k1,k2,k3,k4) &ht_gui_l 0 k1  &ht_alt_l 0 k2  &sht_l LSHFT k3  &ht_ctl_l 0 k4
+#define HRMR(k1,k2,k3,k4) &ht_ctl_r 0 k1  &sht_r RSHFT k2  &ht_alt_r 0 k3  &ht_gui_r 0 k4
 
 / {
     /* Mouse layer processor — properties */
@@ -138,6 +155,7 @@ name: name##_mod_tap {                     \
     /* Trackball input processor pipeline — default + layer overrides */
     trackball_listener {
         input-processors =
+            <&zip_trace>,
             <&zip_spike_filter 5>,
             <&zip_response_curve 6>,
             <&zip_xy_scaler 2 3>,
@@ -146,6 +164,7 @@ name: name##_mod_tap {                     \
         scroll {
             layers = <SCROLL>;
             input-processors =
+                <&zip_trace>,
                 <&zip_spike_filter 6>,
                 <&zip_xy_scaler 1 80>,
                 <&zip_xy_to_scroll_mapper>,
@@ -155,6 +174,7 @@ name: name##_mod_tap {                     \
         gaming {
             layers = <GAMPAD>;
             input-processors =
+                <&zip_trace>,
                 <&zip_spike_filter 6>,
                 <&zip_response_curve 4>,
                 <&zip_xy_scaler 2 3>;
