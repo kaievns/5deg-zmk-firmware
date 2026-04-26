@@ -192,8 +192,7 @@ name: name##_quick_hold_tap {                         \
     trackball_listener {
         input-processors =
             <&zip_pmw3610_unpack_xy>,
-            <&zip_trace>,
-            <&zip_spike_filter 5>,
+            <&zip_spike_filter 6>,
             <&zip_response_curve 6>,
             <&zip_xy_scaler 2 3>,
             <&zip_mouse_layer MOUSE 1200>;
@@ -202,7 +201,6 @@ name: name##_quick_hold_tap {                         \
             layers = <SCROLL>;
             input-processors =
                 <&zip_pmw3610_unpack_xy>,
-                <&zip_trace>,
                 <&zip_spike_filter 6>,
                 <&zip_xy_scaler 1 80>,
                 <&zip_xy_to_scroll_mapper>,
@@ -213,7 +211,6 @@ name: name##_quick_hold_tap {                         \
             layers = <GAMPAD>;
             input-processors =
                 <&zip_pmw3610_unpack_xy>,
-                <&zip_trace>,
                 <&zip_spike_filter 6>,
                 <&zip_response_curve 4>,
                 <&zip_xy_scaler 2 3>;

@@ -21,6 +21,7 @@
 #include <input/processors/response_curve.dtsi>
 #include <input/processors/spike_filter.dtsi>
 #include <input/processors/mouse_layer.dtsi>
+#include <input/processors/pmw3610_unpack_xy.dtsi>
 
 / {
     chosen {
